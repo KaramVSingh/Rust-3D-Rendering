@@ -1,9 +1,9 @@
 // ----------------------- Pixel ----------------------- //
 #[derive(Clone, Copy)]
-struct Pixel {
-    r: u8,
-    g: u8,
-    b: u8,
+pub struct Pixel {
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
     depth: f64
 }
 
@@ -15,12 +15,18 @@ impl Pixel {
 
 // ----------------------- Frame ----------------------- //
 pub struct Frame {
-    pixels: Vec<Pixel>
+    pixels: Vec<Pixel>,
+    width: usize,
+    height: usize
 }
 
 impl Frame {
     pub fn new(width: usize, height: usize) -> Frame {
-        Frame { pixels: vec![Pixel::new(); width * height] }
+        Frame { pixels: vec![Pixel::new(); width * height], width: width, height: height }
+    }
+
+    pub fn as_buffer<T>(&self, transform: &dyn Fn(&Pixel) -> T) -> Vec<T> {
+        self.pixels.iter().map(transform).collect()
     }
 }
 
