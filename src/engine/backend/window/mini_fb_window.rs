@@ -36,7 +36,7 @@ impl WindowBackend for MiniFbWindow {
 
     fn draw(&mut self, frame: Frame) {
         let as_backend_buffer: Vec<u32> = frame.as_buffer(
-            &|pixel| { ((pixel.r as u32) << 16) | ((pixel.g as u32) << 8) | (pixel.b as u32) }
+            &|pixel| { ((pixel.color.r as u32) << 16) | ((pixel.color.g as u32) << 8) | (pixel.color.b as u32) }
         );
         
         let (width, height) = self.get_dimensions();
