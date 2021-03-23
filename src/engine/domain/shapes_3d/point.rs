@@ -7,6 +7,8 @@ pub struct Point {
 }
 
 impl Point {
+    const DEFAULT_VALUE: f64 = 1.0;
+    
     pub fn new(x: f64, y: f64, z: f64) -> Point {
         Point {
             mat: Mat::new([[x], [y], [z]])
@@ -17,7 +19,7 @@ impl Point {
         let vector_array = (0..3)
             .map(
                 |index| { 
-                    let value = if index >= DIM { 1.0 } else { mat.index(index, 0) };
+                    let value = if index >= DIM { Point::DEFAULT_VALUE } else { mat.index(index, 0) };
                     [value]
                 }
             )
@@ -45,7 +47,7 @@ impl Point {
         let vector_array = (0..DIM)
             .map(
                 |index| { 
-                    let value = if index < 3 { self.mat.index(index, 0) } else { 1.0 };
+                    let value = if index < 3 { self.mat.index(index, 0) } else { Point::DEFAULT_VALUE };
                     [value]
                 }
             )

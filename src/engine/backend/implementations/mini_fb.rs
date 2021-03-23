@@ -1,15 +1,15 @@
 use minifb::{ Window, WindowOptions };
 
-use super::window_backend::WindowBackend;
+use super::super::window_backend::WindowBackend;
 use crate::engine::domain::frame::Frame;
 
-pub struct MiniFbWindow {
+pub struct MiniFb {
     window: Window
 }
 
-impl WindowBackend for MiniFbWindow {
+impl WindowBackend for MiniFb {
 
-    fn new(window_name: &str, width: usize, height: usize) -> MiniFbWindow {
+    fn new(window_name: &str, width: usize, height: usize) -> MiniFb {
         let window = match Window::new(
             window_name,
             width,
@@ -23,7 +23,7 @@ impl WindowBackend for MiniFbWindow {
             Err(err) =>  panic!("Unable to create window {}", err)
         };
 
-        MiniFbWindow { window }
+        MiniFb { window }
     }
 
     fn get_dimensions(&self) -> (usize, usize) {
