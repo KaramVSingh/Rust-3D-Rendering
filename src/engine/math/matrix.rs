@@ -9,6 +9,10 @@ impl <const ROWS: usize, const COLS: usize> Mat<ROWS, COLS> {
         Mat { data: data }
     }
 
+    pub fn index(&self, row: usize, col: usize) -> f64 {
+        self.data[row][col]
+    }
+
     pub fn add(&self, other: &Mat<ROWS, COLS>) -> Mat<ROWS, COLS> {
         Mat::static_operation(self, other, &|a, b| { a + b })
     }

@@ -17,7 +17,7 @@ fn main() {
             p1: Coord { x: 100, y: 100, depth: 1.0 },
             p2: Coord { x: 100, y: 300, depth: 1.0 },
             p3: Coord { x: 200, y: 200, depth: 0.0 },
-            color: Color { r: 255, g: 255, b: 255 }
+            color: Color { r: 0, g: 255, b: 0 }
         };
 
         frame.draw_shape(&some_triangle);
