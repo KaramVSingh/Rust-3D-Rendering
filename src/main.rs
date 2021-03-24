@@ -11,14 +11,24 @@ use engine::domain::frame::Frame;
 fn main() {
     let mut window = MiniFb::new("Hello World!", 640, 480);
 
+    let mut x_step = 0.01;
+    let mut x = 0.0;
     let mut rx = 0.0;
     let mut ry = 0.0;
-    while window.is_open() {
-        rx += 0.08;
-        ry += 0.03;
-        
-        let (width, height) = window.get_dimensions();
 
+    while window.is_open() {
+        x += x_step;
+        rx += 0.03;
+        ry += 0.01;
+
+        if x < -1.0 {
+            x_step = 0.01;
+        };
+        if x > 1.0 {
+            x_step = -0.01;
+        };
+
+        let (width, height) = window.get_dimensions();
         let mut frame = Frame::new(width, height);
         let some_cube = Mesh {
             triangles: vec![
@@ -78,7 +88,7 @@ fn main() {
         };
 
         let rotated = some_cube.rotate(rx, ry, 0.0);
-        let translated = rotated.translate(0.0, 0.0, 25.0);
+        let translated = rotated.translate(x, 0.0, 25.0);
         let some_cube_as_triangles = translated.project_to_screenspace(
             0.1,
             1000.0,
