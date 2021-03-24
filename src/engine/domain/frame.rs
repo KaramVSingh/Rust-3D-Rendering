@@ -18,7 +18,7 @@ pub struct Pixel {
 
 impl Pixel {
     pub fn empty() -> Pixel {
-        Pixel { x: 0, y: 0, color: Color { r: 0, g: 0, b: 0 }, depth: 0.0 }
+        Pixel { x: 0, y: 0, color: Color { r: 0, g: 0, b: 0 }, depth: f64::NEG_INFINITY }
     }
 
     pub fn new(x: usize, y: usize, color: Color, depth: f64) -> Pixel {

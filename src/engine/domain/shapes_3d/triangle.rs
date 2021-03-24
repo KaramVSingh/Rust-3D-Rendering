@@ -12,7 +12,7 @@ pub struct Triangle {
 }
 
 impl Triangle {
-    pub fn project_to_screenspace(&self, f_near: f64, f_far: f64, f_fov: f64, width: f64, height: f64) -> Triangle2D {
+    pub fn project_to_screenspace(&self, f_near: f64, f_far: f64, f_fov: f64, width: f64, height: f64) -> Vec<Triangle2D> {
         let f_fov_rad = 1.0 / (f_fov * 0.5 / 180.0 * 3.14159).tan();
         let projection_matrix = Mat::new(
             [
@@ -43,7 +43,7 @@ impl Triangle {
         let p3_3d = Point::from_mat(p3_normalized);
 
         // draw as 2D triangle
-        Triangle2D {
+        let triangle = Triangle2D {
             p1: Coord2D {
                 x: ((p1_3d.x() + 1.0) * 0.5 * width) as i32,
                 y: ((p1_3d.y() + 1.0) * 0.5 * height) as i32,
@@ -60,7 +60,9 @@ impl Triangle {
                 depth: w3
             },
             color: self.color
-        }
+        };
+
+        vec![triangle]
     }
 
     pub fn translate(&self, x: f64, y: f64, z: f64) -> Triangle {
