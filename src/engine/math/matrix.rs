@@ -13,14 +13,6 @@ impl <const ROWS: usize, const COLS: usize> Mat<ROWS, COLS> {
         self.data[row][col]
     }
 
-    pub fn add(&self, other: &Mat<ROWS, COLS>) -> Mat<ROWS, COLS> {
-        Mat::static_operation(self, other, &|a, b| { a + b })
-    }
-
-    pub fn sub(&self, other: &Mat<ROWS, COLS>) -> Mat<ROWS, COLS> {
-        Mat::static_operation(self, other, &|a, b| { a - b })
-    }
-
     pub fn times_vec(&self, other: &Mat<COLS, 1>) -> Mat<ROWS, 1> {
         let new_data = &mut [[0.0; 1]; ROWS];
         for row in 0..ROWS {
@@ -35,12 +27,11 @@ impl <const ROWS: usize, const COLS: usize> Mat<ROWS, COLS> {
         Mat::new(*new_data)
     }
 
-    // ----------------------- Private Static Functions ----------------------- //
-    fn static_operation(a: &Mat<ROWS, COLS>, b: &Mat<ROWS, COLS>, operation: &dyn Fn(f64, f64) -> f64) -> Mat<ROWS, COLS> {
+    pub fn static_operation(&self, operation: &dyn Fn(f64) -> f64) -> Mat<ROWS, COLS> {
         let new_data = &mut [[0.0; COLS]; ROWS];
         for row in 0..ROWS {
             for col in 0..COLS {
-                new_data[row][col] = operation(a.data[row][col], b.data[row][col]);
+                new_data[row][col] = operation(self.data[row][col]);
             }
         }
 
@@ -98,37 +89,6 @@ mod tests {
     }
 
     #[test]
-    fn test_sub() {
-        // Given
-        let a = Mat::new(
-            [
-                [1.0],
-                [2.0]
-            ]
-        );
-
-        let b = Mat::new(
-            [
-                [3.0],
-                [4.0]
-            ]
-        );
-
-        let expected = Mat::new(
-            [
-                [-2.0],
-                [-2.0]
-            ]
-        );
-
-        // When
-        let c = a.sub(&b);
-
-        // Then
-        assert_eq!(c, expected);
-    }
-
-    #[test]
     fn test_add() {
         // Given
         let a: Mat<1, 2> = Mat::new(
@@ -137,20 +97,14 @@ mod tests {
             ]
         );
 
-        let b: Mat<1, 2> = Mat::new(
+        let expected = Mat::new(
             [
                 [2.0, 3.0]
             ]
         );
 
-        let expected = Mat::new(
-            [
-                [2.0, 4.0]
-            ]
-        );
-
         // When
-        let c = a.add(&b);
+        let c = a.static_operation(&|val| { val + 2.0 });
 
         // Then
         assert_eq!(c, expected);

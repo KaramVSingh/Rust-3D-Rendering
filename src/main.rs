@@ -16,7 +16,7 @@ fn main() {
         let some_triangle = Triangle {
             p1: Coord { x: 100, y: 100, depth: 1.0 },
             p2: Coord { x: 100, y: 300, depth: 1.0 },
-            p3: Coord { x: 200, y: 200, depth: 0.0 },
+            p3: Coord { x: 200, y: 200, depth: 1.0 },
             color: Color { r: 0, g: 255, b: 0 }
         };
 

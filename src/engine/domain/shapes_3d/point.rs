@@ -31,6 +31,10 @@ impl Point {
         Point { mat: vector }
     }
 
+    pub fn translate(&self, x: f64, y: f64, z: f64) -> Point {
+        Point::new(self.x() + x, self.y() + y, self.z() + z)
+    }
+
     pub fn x(&self) -> f64 {
         self.mat.index(0, 0)
     }

@@ -18,7 +18,7 @@ pub struct Pixel {
 
 impl Pixel {
     pub fn empty() -> Pixel {
-        Pixel { x: 0, y: 0, color: Color { r: 0, g: 0, b: 0 }, depth: f64::INFINITY }
+        Pixel { x: 0, y: 0, color: Color { r: 0, g: 0, b: 0 }, depth: 0.0 }
     }
 
     pub fn new(x: usize, y: usize, color: Color, depth: f64) -> Pixel {
@@ -53,7 +53,7 @@ impl Frame {
 
     fn draw_raw_pixel(&mut self, pixel: Pixel) {
         if pixel.x < self.width && pixel.y < self.height {
-            if pixel.depth <= self.pixels[pixel.y * self.width + pixel.x].depth {
+            if pixel.depth > self.pixels[pixel.y * self.width + pixel.x].depth {
                 self.pixels[pixel.y * self.width + pixel.x] = pixel
             }
         }
