@@ -1,4 +1,4 @@
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone, Copy)]
 pub struct Mat<const ROWS: usize, const COLS: usize> {
     // Indexing - data[row][col]
     data: [[f64; COLS]; ROWS]

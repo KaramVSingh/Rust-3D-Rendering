@@ -2,6 +2,7 @@ use std::convert::TryInto;
 
 use crate::engine::math::matrix::Mat;
 
+#[derive(Clone, Copy)]
 pub struct Point {
     mat: Mat<3, 1>
 }

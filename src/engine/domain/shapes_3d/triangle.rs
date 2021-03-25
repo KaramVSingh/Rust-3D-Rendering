@@ -1,18 +1,107 @@
 use crate::engine::math::matrix::Mat;
 use super::point::Point;
 use super::super::shapes_2d::triangle::Triangle as Triangle2D;
+use super::super::shapes_2d::triangle::FillTriangle as FillTriangle2D;
+use super::super::shapes_2d::shape::Shape as Shape2D;
 use super::super::shapes_2d::shape::Coord as Coord2D;
 use super::super::frame::Color;
 
+// ---------------------------------- Unfilled Triangle ---------------------------------- //
+
 pub struct Triangle {
-    pub p1: Point,
-    pub p2: Point,
-    pub p3: Point,
-    pub color: Color
+    base: BaseTriangle,
+    color: Color
 }
 
 impl Triangle {
-    pub fn project_to_screenspace(&self, f_near: f64, f_far: f64, f_fov: f64, width: f64, height: f64) -> Vec<Triangle2D> {
+    pub fn new(p1: Point, p2: Point, p3: Point, color: Color) -> Triangle {
+        Triangle {
+            base: BaseTriangle { p1: p1, p2: p2, p3: p3 },
+            color: color
+        }
+    }
+    
+    pub fn project_to_screenspace(&self, f_near: f64, f_far: f64, f_fov: f64, width: f64, height: f64) -> Vec<Box<dyn Shape2D>> {
+        let coords = self.base.project_to_screenspace(f_near, f_far, f_fov, width, height);
+        let triangle = Triangle2D {
+            p1: coords[0],
+            p2: coords[1],
+            p3: coords[2],
+            color: self.color
+        };
+
+        vec![Box::new(triangle)]
+    }
+
+    pub fn translate(&self, x: f64, y: f64, z: f64) -> Triangle {
+        Triangle {
+            base: self.base.translate(x, y, z),
+            color: self.color
+        }
+    }
+
+    // https://math.stackexchange.com/questions/1882276/combining-all-three-rotation-matrices
+    pub fn rotate(&self, rx: f64, ry: f64, rz: f64) -> Triangle {
+        Triangle {
+            base: self.base.rotate(rx, ry, rz),
+            color: self.color
+        }
+    }
+}
+
+// ---------------------------------- Filled Triangle ---------------------------------- //
+
+pub struct FillTriangle {
+    base: BaseTriangle,
+    color: Color
+}
+
+impl FillTriangle {
+    pub fn new(p1: Point, p2: Point, p3: Point, color: Color) -> FillTriangle {
+        FillTriangle {
+            base: BaseTriangle { p1: p1, p2: p2, p3: p3 },
+            color: color
+        }
+    }
+    
+    pub fn project_to_screenspace(&self, f_near: f64, f_far: f64, f_fov: f64, width: f64, height: f64) -> Vec<Box<dyn Shape2D>> {
+        let coords = self.base.project_to_screenspace(f_near, f_far, f_fov, width, height);
+        let triangle = FillTriangle2D {
+            p1: coords[0],
+            p2: coords[1],
+            p3: coords[2],
+            color: self.color
+        };
+
+        vec![Box::new(triangle)]
+    }
+
+    pub fn translate(&self, x: f64, y: f64, z: f64) -> FillTriangle {
+        FillTriangle {
+            base: self.base.translate(x, y, z),
+            color: self.color
+        }
+    }
+
+    // https://math.stackexchange.com/questions/1882276/combining-all-three-rotation-matrices
+    pub fn rotate(&self, rx: f64, ry: f64, rz: f64) -> FillTriangle {
+        FillTriangle {
+            base: self.base.rotate(rx, ry, rz),
+            color: self.color
+        }
+    }
+}
+
+// ---------------------------------- Base Triangle Functions ---------------------------------- //
+
+struct BaseTriangle {
+    pub p1: Point,
+    pub p2: Point,
+    pub p3: Point
+}
+
+impl BaseTriangle {
+    pub fn project_to_screenspace(&self, f_near: f64, f_far: f64, f_fov: f64, width: f64, height: f64) -> [Coord2D; 3] {
         let f_fov_rad = 1.0 / (f_fov * 0.5 / 180.0 * 3.14159).tan();
         let projection_matrix = Mat::new(
             [
@@ -42,40 +131,34 @@ impl Triangle {
         let p2_3d = Point::from_mat(p2_normalized);
         let p3_3d = Point::from_mat(p3_normalized);
 
-        // draw as 2D triangle
-        let triangle = Triangle2D {
-            p1: Coord2D {
+        [
+            Coord2D {
                 x: ((p1_3d.x() + 1.0) * 0.5 * width) as i32,
                 y: ((p1_3d.y() + 1.0) * 0.5 * height) as i32,
                 depth: w1
             },
-            p2: Coord2D {
+            Coord2D {
                 x: ((p2_3d.x() + 1.0) * 0.5 * width) as i32,
                 y: ((p2_3d.y() + 1.0) * 0.5 * height) as i32,
                 depth: w2
             },
-            p3: Coord2D {
+            Coord2D {
                 x: ((p3_3d.x() + 1.0) * 0.5 * width) as i32,
                 y: ((p3_3d.y() + 1.0) * 0.5 * height) as i32,
                 depth: w3
-            },
-            color: self.color
-        };
-
-        vec![triangle]
+            }
+        ]
     }
 
-    pub fn translate(&self, x: f64, y: f64, z: f64) -> Triangle {
-        Triangle {
+    pub fn translate(&self, x: f64, y: f64, z: f64) -> BaseTriangle {
+        BaseTriangle {
             p1: self.p1.translate(x, y, z),
             p2: self.p2.translate(x, y, z),
-            p3: self.p3.translate(x, y, z),
-            color: self.color
+            p3: self.p3.translate(x, y, z)
         }
     }
 
-    // https://math.stackexchange.com/questions/1882276/combining-all-three-rotation-matrices
-    pub fn rotate(&self, rx: f64, ry: f64, rz: f64) -> Triangle {
+    pub fn rotate(&self, rx: f64, ry: f64, rz: f64) -> BaseTriangle {
         let sin_a = rx.sin(); let cos_a = rx.cos();
         let sin_b = ry.sin(); let cos_b = ry.cos();
         let sin_y = rz.sin(); let cos_y = rz.cos();
@@ -92,11 +175,10 @@ impl Triangle {
         let p2_mat = self.p2.apply_projection(&rotation_matrix);
         let p3_mat = self.p3.apply_projection(&rotation_matrix);
         
-        Triangle {
+        BaseTriangle {
             p1: Point::from_mat(p1_mat),
             p2: Point::from_mat(p2_mat),
-            p3: Point::from_mat(p3_mat),
-            color: self.color
+            p3: Point::from_mat(p3_mat)
         }
     }
 }
