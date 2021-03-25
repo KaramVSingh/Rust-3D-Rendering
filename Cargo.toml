@@ -1,5 +1,5 @@
 [package]
-name = "game_engine_2"
+name = "Rust-3D-Rendering"
 version = "0.1.0"
 authors = ["Karam Singh <karam.singh.vir@gmail.com>"]
 edition = "2018"
